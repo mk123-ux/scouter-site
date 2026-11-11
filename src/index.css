@@ -4,6 +4,7 @@
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
 }
 
 html,
@@ -11,5 +12,10 @@ body,
 #root {
   margin: 0;
   padding: 0;
-  background: #000;
+  background: #020617;
+}
+
+body {
+  font-family: "Inter", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
