@@ -305,10 +305,6 @@ const TEAM = [
 
 const FAQ = [
   {
-    q: "What is Scouter, and how is it different from regular social networks?",
-    a: "Scouter is a specialized digital platform that connects young Georgian athletes with international scouts and academies. Unlike social networks, the focus is on verified sports data, physical tests and full matches.",
-  },
-  {
     q: "How much does the platform cost for athletes and parents?",
     a: "Creating a basic profile and uploading data and videos is completely free, for life. Optionally, you can choose Pro Athlete (150 GEL per year) for priority placement in search results, extended analytics and profile-view statistics, or Elite Athlete (250 GEL per year), which adds detailed progress analysis and professional video editing support.",
   },
