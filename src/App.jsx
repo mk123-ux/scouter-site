@@ -1213,7 +1213,7 @@ function FifaCardShowcase({ tier, setTier, t, dark }) {
 export default function App() {
   const [activePage, setActivePage] = useState("home");
   const [lang, setLang] = useState("en");
-  const [theme, setTheme] = useState("light");
+  const [theme, setTheme] = useState("dark");
   const [currency, setCurrency] = useState("EUR");
   const [pricingAudience, setPricingAudience] = useState("b2b");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
