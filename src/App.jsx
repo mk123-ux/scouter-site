@@ -208,8 +208,8 @@ const CONTENT = {
     ctaOpenApp: "Open App",
     ctaContact: "Contact Us",
     hero: {
-      badge: "Verified talent intelligence. Global reach",
-      title: "Talent is Universal. Opportunity is Not.",
+      badge: "Verified talent intelligence. Global reach.",
+      title: "Talent is Universal. Opportunity is Not",
       subtitle:
         "Scouter is a B2B digital scouting intelligence platform - not a social network - connecting verified Georgian athletes (ages 14–25) with European clubs and scouts through uncut match archives and standardized combine data.",
       btnDemo: "Explore Live Demo",
@@ -604,8 +604,8 @@ const CONTENT = {
     ctaOpenApp: "აპლიკაცია",
     ctaContact: "კონტაქტი",
     hero: {
-      badge: "ვერიფიცირებული ტალანტების ბაზა. გლობალური წვდომა",
-      title: "ნიჭი უნივერსალურია. შესაძლებლობა - არა.",
+      badge: "ვერიფიცირებული ტალანტების ბაზა. გლობალური წვდომა.",
+      title: "ნიჭი უნივერსალურია. შესაძლებლობა - არა",
       subtitle:
         "Scouter არის B2B სკაუტინგ-ინტელექტის პლატფორმა - და არა სოციალური ქსელი - რომელიც 14–25 წლის ვერიფიცირებულ ქართველ სპორტსმენებს აკავშირებს ევროპულ კლუბებთან სრული მატჩებისა და Combine ტესტების საფუძველზე.",
       btnDemo: "ნახე Live დემო",
