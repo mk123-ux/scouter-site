@@ -208,10 +208,10 @@ const CONTENT = {
     ctaOpenApp: "Open App",
     ctaContact: "Contact Us",
     hero: {
-      badge: "Talent is Universal. Opportunity is Not.",
-      title: "Verified talent intelligence. Global reach",
+      badge: "Verified talent intelligence. Global reach",
+      title: "Talent is Universal. Opportunity is Not.",
       subtitle:
-        "Scouter is a B2B digital scouting intelligence platform — not a social network — connecting verified Georgian athletes (ages 14–25) with European clubs and scouts through uncut match archives and standardized combine data.",
+        "Scouter is a B2B digital scouting intelligence platform - not a social network - connecting verified Georgian athletes (ages 14–25) with European clubs and scouts through uncut match archives and standardized combine data.",
       btnDemo: "Explore Live Demo",
       btnTrial: "Start 14-Day Free Pilot",
       note: "Free forever for athletes · 14-day free pilot for clubs & scouts",
@@ -255,7 +255,7 @@ const CONTENT = {
     },
     athletesPage: {
       eyebrow: "For Athletes & Parents (Ages 14–25)",
-      title: "Not a social network — a verified scouting database",
+      title: "Not a social network - a verified scouting database",
       subtitle:
         "Your career is evaluated on standardized combine metrics and uncut 90-minute matches, never on personal connections or family budget.",
       cardShowcaseTitle: "Your Verified EA FC-Style Scouting Card",
@@ -282,7 +282,7 @@ const CONTENT = {
       features: [
         [
           "Verified data provenance",
-          "Cross-checked with federation records, local coaches, and Scouter Combine tests — free on all plans.",
+          "Cross-checked with federation records, local coaches, and Scouter Combine tests - free on all plans.",
         ],
         [
           "Uncut 90' matches count",
@@ -480,7 +480,7 @@ const CONTENT = {
       eyebrow: "About Scouter",
       title: "Leveling the playing field for Georgian talent",
       subtitle:
-        "We are building a trusted B2B sports intelligence bridge — not a social network — so young athletes are judged on verified data rather than geography or connections.",
+        "We are building a trusted B2B sports intelligence bridge - not a social network - so young athletes are judged on verified data rather than geography or connections.",
       trustTitle: "Trust, Verification & Child Safeguarding",
       trustCards: [
         [
@@ -523,7 +523,7 @@ const CONTENT = {
           cat: "athletes",
           tag: "Athletes & Parents",
           q: "How much does the platform cost for athletes and parents?",
-          a: "Creating a Free Basic profile, uploading match footage, and getting verified is completely free forever (0 GEL). Optionally, athletes can upgrade to Verified Pro (150 GEL/year) for priority scout search placement, official combine integration, and club view analytics — or access the exact same Pro package for 100 GEL/year through a Scouter Partner Academy.",
+          a: "Creating a Free Basic profile, uploading match footage, and getting verified is completely free forever (0 GEL). Optionally, athletes can upgrade to Verified Pro (150 GEL/year) for priority scout search placement, official combine integration, and club view analytics - or access the exact same Pro package for 100 GEL/year through a Scouter Partner Academy.",
         },
         {
           cat: "clubs",
@@ -553,7 +553,7 @@ const CONTENT = {
           cat: "athletes",
           tag: "Athletes & Parents",
           q: "Can athletes who live in the regions use the platform?",
-          a: "Yes. Discovering overlooked regional talent across Georgia (Samegrelo, Imereti, Adjara, Kakheti, and beyond) is our core mission — allowing players to be evaluated by European clubs without relocating to Tbilisi or paying for $3,500 overseas trial camps.",
+          a: "Yes. Discovering overlooked regional talent across Georgia (Samegrelo, Imereti, Adjara, Kakheti, and beyond) is our core mission - allowing players to be evaluated by European clubs without relocating to Tbilisi or paying for $3,500 overseas trial camps.",
         },
         {
           cat: "athletes",
@@ -604,10 +604,10 @@ const CONTENT = {
     ctaOpenApp: "აპლიკაცია",
     ctaContact: "კონტაქტი",
     hero: {
-      badge: "ნიჭი უნივერსალურია. შესაძლებლობა — არა.",
-      title: "ვერიფიცირებული ტალანტების ბაზა. გლობალური წვდომა",
+      badge: "ვერიფიცირებული ტალანტების ბაზა. გლობალური წვდომა",
+      title: "ნიჭი უნივერსალურია. შესაძლებლობა - არა.",
       subtitle:
-        "Scouter არის B2B სკაუტინგ-ინტელექტის პლატფორმა — და არა სოციალური ქსელი — რომელიც 14–25 წლის ვერიფიცირებულ ქართველ სპორტსმენებს აკავშირებს ევროპულ კლუბებთან სრული მატჩებისა და Combine ტესტების საფუძველზე.",
+        "Scouter არის B2B სკაუტინგ-ინტელექტის პლატფორმა - და არა სოციალური ქსელი - რომელიც 14–25 წლის ვერიფიცირებულ ქართველ სპორტსმენებს აკავშირებს ევროპულ კლუბებთან სრული მატჩებისა და Combine ტესტების საფუძველზე.",
       btnDemo: "ნახე Live დემო",
       btnTrial: "14-დღიანი უფასო Pilot",
       note: "სპორტსმენებისთვის უფასოა სამუდამოდ · 14-დღიანი უფასო საცდელი პერიოდი კლუბებისთვის",
@@ -678,7 +678,7 @@ const CONTENT = {
       features: [
         [
           "ვერიფიცირებული მონაცემები",
-          "ფედერაციასთან, მწვრთნელებთან და Combine ტესტებთან გადამოწმებული სტატისტიკა — უფასოდ.",
+          "ფედერაციასთან, მწვრთნელებთან და Combine ტესტებთან გადამოწმებული სტატისტიკა - უფასოდ.",
         ],
         [
           "სრული 90' მატჩების არქივი",
@@ -876,7 +876,7 @@ const CONTENT = {
       eyebrow: "Scouter-ის შესახებ",
       title: "ვხსნით გზას მსოფლიო სპორტული არენისკენ",
       subtitle:
-        "ჩვენ ვქმნით სანდო B2B სპორტულ ინტელექტის პლატფორმას — და არა სოციალურ ქსელს — რათა სპორტსმენის მომავალი განისაზღვროს ვერიფიცირებული მონაცემებით.",
+        "ჩვენ ვქმნით სანდო B2B სპორტულ ინტელექტის პლატფორმას - და არა სოციალურ ქსელს - რათა სპორტსმენის მომავალი განისაზღვროს ვერიფიცირებული მონაცემებით.",
       trustTitle: "სანდოობა, ვერიფიკაცია და არასრულწლოვანთა დაცვა",
       trustCards: [
         [
@@ -925,13 +925,13 @@ const CONTENT = {
           cat: "clubs",
           tag: "კლუბები და სკაუტები",
           q: "რა ღირს წვდომა კლუბებისა და სკაუტებისთვის?",
-          a: "კლუბებსა და სკაუტებს შეუძლიათ დაიწყონ უფასო 14-დღიანი პილოტით (14-Day Pilot — 0 ₾). წლიური B2B პაკეტებია: Club Starter — 2,000 ₾/წელი (3 მომხმარებელი, ულიმიტო ვერიფიცირებული ბაზა და 90-წუთიანი მატჩების არქივი) და Club Pro — 4,500 ₾/წელი (ულიმიტო ადგილები, AI ალერტები და Concierge სკაუტინგი).",
+          a: "კლუბებსა და სკაუტებს შეუძლიათ დაიწყონ უფასო 14-დღიანი პილოტით (14-Day Pilot - 0 ₾). წლიური B2B პაკეტებია: Club Starter - 2,000 ₾/წელი (3 მომხმარებელი, ულიმიტო ვერიფიცირებული ბაზა და 90-წუთიანი მატჩების არქივი) და Club Pro - 4,500 ₾/წელი (ულიმიტო ადგილები, AI ალერტები და Concierge სკაუტინგი).",
         },
         {
           cat: "safety",
           tag: "Safeguarding და ვერიფიკაცია",
           q: "რით განსხვავდება Scouter სპორტული სოციალური ქსელისგან?",
-          a: "Scouter არის B2B სკაუტინგ-ინტელექტის ბაზა და არა სოციალური ქსელი. აქ არ არის საჯარო კომენტარები, გამომწერები ან უკონტროლო მიმოწერა — ყველა პროფილი ეფუძნება ფედერაციის ოფიციალურ ოქმებს, Combine ტესტებსა და სრულ 90-წუთიან მატჩებს.",
+          a: "Scouter არის B2B სკაუტინგ-ინტელექტის ბაზა და არა სოციალური ქსელი. აქ არ არის საჯარო კომენტარები, გამომწერები ან უკონტროლო მიმოწერა - ყველა პროფილი ეფუძნება ფედერაციის ოფიციალურ ოქმებს, Combine ტესტებსა და სრულ 90-წუთიან მატჩებს.",
         },
         {
           cat: "safety",
@@ -949,7 +949,7 @@ const CONTENT = {
           cat: "athletes",
           tag: "სპორტსმენები და მშობლები",
           q: "შეუძლიათ თუ არა პლატფორმით სარგებლობა რეგიონებში მცხოვრებ სპორტსმენებს?",
-          a: "დიახ. რეგიონებში (სამეგრელო, იმერეთი, აჭარა, კახეთი და სხვ.) მცხოვრები ტალანტების აღმოჩენა ჩვენი მთავარი მისიაა — თბილისში გადმოსვლის ან $3,500-იანი უცხოური კემპების გარეშე.",
+          a: "დიახ. რეგიონებში (სამეგრელო, იმერეთი, აჭარა, კახეთი და სხვ.) მცხოვრები ტალანტების აღმოჩენა ჩვენი მთავარი მისიაა - თბილისში გადმოსვლის ან $3,500-იანი უცხოური კემპების გარეშე.",
         },
         {
           cat: "athletes",
@@ -1404,7 +1404,7 @@ export default function App() {
       document.head.appendChild(link);
     }
     link.href = `data:image/svg+xml,${svgFavicon}`;
-    document.title = "Scouter. — Verified Talent Intelligence";
+    document.title = "Scouter. - Verified Talent Intelligence";
   }, []);
 
   const dark = theme === "dark";
