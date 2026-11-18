@@ -1,12 +1,12 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect, useId } from "react";
 import {
-  Activity,
   ArrowRight,
   BadgeCheck,
   Check,
   ChevronDown,
   ExternalLink,
   Film,
+  Lock,
   MapPin,
   Menu,
   MessageSquare,
@@ -30,7 +30,7 @@ import {
 const APP_URL = "https://scouter-xi.vercel.app/";
 
 /* ------------------------------------------------------------------ */
-/* DEMO ATHLETE DATABASE (Interactive Live Demo)                      */
+/* DEMO ATHLETE DATABASE (Ages 14–25 · Interactive Live Demo)         */
 /* ------------------------------------------------------------------ */
 const DEMO_ATHLETES = [
   {
@@ -45,6 +45,7 @@ const DEMO_ATHLETES = [
     foot: "Left",
     club: "FC Torpedo Youth",
     verified: true,
+    isMinor: true,
     rating: 84,
     sprint30m: "4.08 s",
     passAccuracy: "87%",
@@ -53,8 +54,10 @@ const DEMO_ATHLETES = [
     fullMatches: 6,
     highlights: 4,
     gradient: "from-blue-600 to-emerald-500",
-    bioEn: "Explosive overlapping full-back with high stamina and verified federation match logs from Western Georgia Youth League.",
-    bioKa: "სწრაფი მარცხენა მცველი მაღალი გამძლეობითა და დასავლეთ საქართველოს ლიგის ფედერაციის მიერ ვერიფიცირებული მატჩებით.",
+    bioEn:
+      "Explosive overlapping full-back with high stamina and verified federation & regional combine logs from Western Georgia.",
+    bioKa:
+      "სწრაფი მარცხენა მცველი მაღალი გამძლეობითა და დასავლეთ საქართველოს ლიგის ფედერაციისა და Combine ტესტებით ვერიფიცირებული მონაცემებით.",
   },
   {
     id: 2,
@@ -68,6 +71,7 @@ const DEMO_ATHLETES = [
     foot: "Right",
     club: "Zugdidi Academy",
     verified: true,
+    isMinor: true,
     rating: 87,
     sprint30m: "3.98 s",
     passAccuracy: "81%",
@@ -76,31 +80,36 @@ const DEMO_ATHLETES = [
     fullMatches: 8,
     highlights: 5,
     gradient: "from-emerald-600 to-teal-500",
-    bioEn: "Clinical central forward with strong aerial presence and 14 goals in 18 regional academy fixtures.",
-    bioKa: "ცენტრალური თავდამსხმელი ძლიერი ფიზიკური მონაცემებითა და 18 რეგიონულ მატჩში გატანილი 14 გოლით.",
+    bioEn:
+      "Clinical central forward with strong aerial presence and 14 goals in 18 verified regional academy fixtures.",
+    bioKa:
+      "ცენტრალური თავდამსხმელი ძლიერი ფიზიკური მონაცემებითა და 18 ვერიფიცირებულ რეგიონულ მატჩში გატანილი 14 გოლით.",
   },
   {
     id: 3,
     name: "Dato Beridze",
-    age: 16,
-    ageGroup: "U17",
+    age: 20,
+    ageGroup: "U23 / Senior",
     position: "Midfielder",
     region: "Tbilisi",
     city: "Tbilisi",
-    height: "176 cm",
+    height: "178 cm",
     foot: "Both",
-    club: "Saburtalo Youth",
+    club: "Saburtalo II",
     verified: true,
-    rating: 85,
-    sprint30m: "4.15 s",
+    isMinor: false,
+    rating: 86,
+    sprint30m: "4.11 s",
     passAccuracy: "91%",
-    pace: 82,
-    stamina: 89,
-    fullMatches: 9,
+    pace: 83,
+    stamina: 90,
+    fullMatches: 11,
     highlights: 6,
     gradient: "from-indigo-600 to-blue-500",
-    bioEn: "Box-to-box central midfielder known for progressive line-breaking passes and tactical discipline.",
-    bioKa: "ცენტრალური ნახევარმცველი გამორჩეული პასის სიზუსტითა და ტაქტიკური დისციპლინით.",
+    bioEn:
+      "Box-to-box central midfielder in Liga 2/3 with progressive line-breaking passing and GPS stamina logs.",
+    bioKa:
+      "ცენტრალური ნახევარმცველი გამორჩეული პასის სიზუსტითა და GPS ფიზიკური დატვირთვის ოფიციალური მონაცემებით.",
   },
   {
     id: 4,
@@ -114,6 +123,7 @@ const DEMO_ATHLETES = [
     foot: "Left",
     club: "Batumi Talent Hub",
     verified: true,
+    isMinor: true,
     rating: 81,
     sprint30m: "4.12 s",
     passAccuracy: "79%",
@@ -122,8 +132,10 @@ const DEMO_ATHLETES = [
     fullMatches: 4,
     highlights: 3,
     gradient: "from-cyan-600 to-emerald-500",
-    bioEn: "Agile inverted winger/striker with high dribbling success rate in 1v1 situations.",
-    bioKa: "სწრაფი შემტევი 1-1-ზე დრიბლინგის მაღალი მაჩვენებლითა და ოფიციალური ფიზიკური ტესტებით.",
+    bioEn:
+      "Agile inverted winger/striker with high 1v1 dribbling efficiency and verified regional combine agility scores.",
+    bioKa:
+      "სწრაფი შემტევი 1-1-ზე დრიბლინგის მაღალი მაჩვენებლითა და რეგიონული Combine ტესტების ოფიციალური შედეგებით.",
   },
   {
     id: 5,
@@ -137,6 +149,7 @@ const DEMO_ATHLETES = [
     foot: "Right",
     club: "Imereti Regional XI",
     verified: true,
+    isMinor: false,
     rating: 83,
     sprint30m: "4.35 s",
     passAccuracy: "84%",
@@ -145,31 +158,36 @@ const DEMO_ATHLETES = [
     fullMatches: 7,
     highlights: 4,
     gradient: "from-blue-700 to-indigo-500",
-    bioEn: "Commanding goalkeeper with strong distribution under pressure and verified reflex test recordings.",
-    bioKa: "მაღალი მეკარე ბურთის ზუსტი განაწილებითა და რეფლექსების ოფიციალური ვიდეოტესტებით.",
+    bioEn:
+      "Commanding goalkeeper with strong distribution under pressure and verified reflex test recordings.",
+    bioKa:
+      "მაღალი მეკარე ბურთის ზუსტი განაწილებითა და რეფლექსების ოფიციალური ვიდეოტესტებით.",
   },
   {
     id: 6,
     name: "Tornike Gelashvili",
-    age: 17,
-    ageGroup: "U17",
+    age: 22,
+    ageGroup: "U23 / Senior",
     position: "Left Back",
     region: "Tbilisi",
     city: "Tbilisi",
-    height: "180 cm",
+    height: "181 cm",
     foot: "Left",
     club: "Independent / Regional",
     verified: false,
+    isMinor: false,
     rating: 78,
-    sprint30m: "4.20 s",
+    sprint30m: "4.19 s",
     passAccuracy: "80%",
-    pace: 83,
-    stamina: 81,
+    pace: 84,
+    stamina: 82,
     fullMatches: 2,
     highlights: 3,
     gradient: "from-slate-700 to-slate-600",
-    bioEn: "Self-uploaded profile pending coach confirmation. Full match footage available for remote review.",
-    bioKa: "პროფილი ელოდება მწვრთნელის ვერიფიკაციას. სრული მატჩის ჩანაწერი ხელმისაწვდომია.",
+    bioEn:
+      "Self-uploaded senior prospect pending coach/federation verification. Uncut match footage available for review.",
+    bioKa:
+      "პროფილი ელოდება მწვრთნელის/ფედერაციის ვერიფიკაციას. სრული მატჩის ჩანაწერი ხელმისაწვდომია.",
   },
 ];
 
@@ -190,91 +208,135 @@ const CONTENT = {
     ctaOpenApp: "Open App",
     ctaContact: "Contact Us",
     hero: {
-      badge: "Talent is universal. Opportunity is not.",
-      title: "Young talent. Global opportunities",
+      badge: "Talent is Universal. Opportunity is Not.",
+      title: "Verified talent intelligence. Global reach",
       subtitle:
-        "Scouter is the digital scouting intelligence platform connecting verified young Georgian athletes with international clubs, academies, and scouts — removing geographical and financial barriers.",
+        "Scouter is a B2B digital scouting intelligence platform — not a social network — connecting verified Georgian athletes (ages 14–25) with European clubs and scouts through uncut match archives and standardized combine data.",
       btnDemo: "Explore Live Demo",
-      btnTrial: "Start 30-Day Free Trial",
-      note: "Free forever for athletes · 30-day free trial for clubs & scouts",
+      btnTrial: "Start 14-Day Free Pilot",
+      note: "Free forever for athletes · 14-day free pilot for clubs & scouts",
       traction: [
-        ["1,200+", "Verified athlete profiles"],
+        ["1,200+", "Verified athlete profiles (14–25)"],
         ["18", "Partner academies across Georgia"],
-        ["45+", "Active European scouts"],
-        ["100%", "Federation & coach data sync"],
+        ["45+", "Active European club scouts"],
+        ["100%", "U18 Safeguarding & data verification"],
       ],
       roleAthleteTitle: "I'm an athlete or a parent",
-      roleAthleteText: "Build a verified profile, upload full matches, and get discovered without expensive foreign camps.",
+      roleAthleteText:
+        "Build a verified scouting dossier, upload uncut matches, and get discovered without $3,500 foreign trial camps.",
       roleAthleteCta: "See athlete benefits",
       roleClubTitle: "I'm a scout or a club",
-      roleClubText: "Filter verified Georgian talent by metrics and watch uncut match archives before flying in.",
+      roleClubText:
+        "Triage verified Georgian talent by combine metrics and 90-minute match footage before booking a single flight.",
       roleClubCta: "See club tools & ROI",
     },
     demo: {
       eyebrow: "Interactive Scouting Workspace",
-      title: "Discover verified Georgian talent in seconds",
-      subtitle: "Test our B2B scouting database. Filter by position, age group, region, or verification status and open full dossiers.",
+      title: "Triage verified Georgian talent in seconds",
+      subtitle:
+        "Test our B2B scouting database (ages 14–25). Filter by position, age group, region, or verification status and inspect full dossiers.",
       filterPos: "Position",
-      filterAge: "Age Group",
+      filterAge: "Age Group (14–25)",
       filterRegion: "Region",
       verifiedOnly: "Verified Only",
       showing: "Showing",
       athletesCount: "athletes",
       openDossier: "Open Full Dossier",
-      verifiedBadge: "Federation Verified",
+      verifiedBadge: "Federation & Combine Verified",
       pendingBadge: "Pending Verification",
+      safeguardingBadge: "U18 Guardian Protected",
       modalMatches: "Full Uncut Matches",
       modalSprint: "30m Sprint",
       modalPass: "Pass Accuracy",
-      modalInvite: "Invite to Trial / Contact",
-      modalWatch: "Preview Full Match Footage",
+      modalInvite: "Request Trial / Contact Academy",
+      modalWatch: "Preview Full 90' Match Footage",
+      safeguardingNotice:
+        "Child Safeguarding Protocol: This athlete is under 18. Direct messaging routes strictly through verified parents/guardians and licensed academy directors.",
     },
     athletesPage: {
-      eyebrow: "For Athletes & Parents",
-      title: "Not a social network — a professional scouting tool",
-      subtitle: "Your talent should be judged on verified metrics and full matches, not personal connections or family budget.",
-      cardShowcaseTitle: "Your Verified EA FC-Style Player Card",
+      eyebrow: "For Athletes & Parents (Ages 14–25)",
+      title: "Not a social network — a verified scouting database",
+      subtitle:
+        "Your career is evaluated on standardized combine metrics and uncut 90-minute matches, never on personal connections or family budget.",
+      cardShowcaseTitle: "Your Verified EA FC-Style Scouting Card",
       cardShowcaseText:
-        "Every verified athlete gets a digital scouting profile. Upgrade to Pro Athlete to unlock your custom shareable EA FC-style player card for Instagram & TikTok, priority scout placement, and club view analytics.",
-      cardToggleBasic: "Basic Free Card",
-      cardTogglePro: "Pro Verified Card",
+        "Every verified athlete gets a structured digital dossier. Upgrade to Verified Pro (150 ₾/yr) or join via an Academy Partner (100 ₾/yr) to unlock your shareable EA FC-style player card, priority search placement, and club view analytics.",
+      cardToggleBasic: "Free Basic Card",
+      cardTogglePro: "Verified Pro Card",
       cardCreateCta: "Generate Your Card in App",
       stepsTitle: "How it works for athletes",
       steps: [
-        ["Build your profile", "Add physical metrics, statistics, and upload highlights, full matches, and physical test recordings."],
-        ["Get verified for free", "Data is cross-checked with federation logs and local coaches. Verified profiles get a trust badge on every plan."],
-        ["Get discovered globally", "Smart matching algorithms put your profile directly in front of European scouts searching for your exact profile."],
+        [
+          "Build your structured profile",
+          "Add physical metrics, position data, highlights, and uncut 90-minute match recordings.",
+        ],
+        [
+          "Get verified for free",
+          "Data is cross-checked with federation match logs, coaches, and regional Combine tests. Verification is 100% free on every plan.",
+        ],
+        [
+          "Get discovered by European clubs",
+          "Smart matching algorithms place your verified dossier directly in front of international scouts searching for your profile.",
+        ],
       ],
       features: [
-        ["Verified data", "Integration with federation records and local coaches. Verification is 100% free on every plan."],
-        ["Full matches count", "Scouts rely on uncut, full-length game footage rather than edited 2-minute highlight reels."],
-        ["From any region", "Showcase your talent from Zugdidi, Kutaisi, or Batumi without relocating to the capital."],
-        ["Zero nepotism", "Objective physical and game metrics give every hardworking athlete an equal international stage."],
-        ["Sponsor visibility", "Sports brands and private supporters use Scouter to back standout youth athletes."],
-        ["Protection for minors", "Under-18 accounts require guardian consent with strictly moderated communication rules."],
+        [
+          "Verified data provenance",
+          "Cross-checked with federation records, local coaches, and Scouter Combine tests — free on all plans.",
+        ],
+        [
+          "Uncut 90' matches count",
+          "Clubs recruit based on full-length game footage rather than edited 2-minute highlight clips.",
+        ],
+        [
+          "From any Georgian region",
+          "Showcase your talent from Zugdidi, Kutaisi, or Batumi without relocating to Tbilisi.",
+        ],
+        [
+          "Zero nepotism",
+          "Objective physical and tactical metrics give every disciplined athlete an equal international stage.",
+        ],
+        [
+          "Academy partner discounts",
+          "Players in partner academies receive full Verified Pro tools at a reduced 100 ₾/year rate.",
+        ],
+        [
+          "Strict U18 safeguarding",
+          "Under-18 accounts require verified guardian consent with zero unmoderated stranger DMs.",
+        ],
       ],
       bannerTitle: "Skip the $3,500 overseas trial camp",
       bannerText:
-        "A two-week European trial camp costs $1,500–3,500 before flights and hotels — often exceeding months of family income. A verified Scouter profile is free for life.",
+        "A two-week European trial camp costs $1,500–3,500 before flights and hotels. A verified Scouter profile is free for life.",
       bannerBtn: "Create Free Profile",
     },
     clubsPage: {
-      eyebrow: "For Clubs & Scouts",
+      eyebrow: "For Clubs & International Scouts",
       title: "Evaluate emerging markets with 75% lower scouting cost",
-      subtitle: "Replace blind international scouting trips with verified data, physical test logs, and uncut match archives.",
+      subtitle:
+        "Replace blind international scouting trips with verified combine metrics, federation logs, and uncut 90-minute match archives.",
       stepsTitle: "How it works for clubs",
       steps: [
-        ["Filter with precision", "Search by position, age, preferred foot, sprint speed, and pass accuracy across all Georgian regions."],
-        ["Evaluate remotely", "Watch full 90-minute match recordings and review coach-verified physical tests from your office."],
-        ["Connect directly", "Message shortlisted players and their guardians or academies directly with zero intermediary fees."],
+        [
+          "Filter & triage with precision",
+          "Search ages 14–25 by position, preferred foot, 30m sprint speed, pass accuracy, and verification status.",
+        ],
+        [
+          "Evaluate remotely",
+          "Watch full 90-minute match recordings and review combine physical tests from your scouting room.",
+        ],
+        [
+          "Connect via compliant channels",
+          "Message shortlisted players' guardians or licensed academies directly with full safeguarding compliance and zero agent markups.",
+        ],
       ],
       features: [
-        ["Smart filters", "Granular filtering across physical, technical, and positional metrics."],
-        ["AI recommendations", "Automated talent alerts tailored to your club's tactical profile."],
-        ["Verified provenance", "Every verified badge is backed by federation data or academy coach confirmation."],
-        ["Full match archives", "Complete game footage alongside tagged key actions."],
-        ["Shortlists & comparison", "Compare multiple candidates side-by-side before scheduling live trials."],
-        ["Direct communication", "Transparent, compliant messaging with guardians and academies."],
+        ["Smart metric filters", "Granular filtering across physical, technical, and positional data."],
+        ["AI talent matching", "Automated prospect alerts tailored to your club's tactical profile."],
+        ["Verified provenance", "Every verified badge is backed by federation logs, coach sign-off, or combine data."],
+        ["Uncut match archives", "Full 90-minute game footage alongside tagged key actions."],
+        ["Candidate triage & shortlists", "Compare prospects side-by-side before scheduling live trials."],
+        ["Safeguarding-compliant outreach", "Audited, transparent communication with academies and legal guardians."],
       ],
       tripTitle: "One traditional scouting trip to Georgia",
       tripRows: [
@@ -285,12 +347,12 @@ const CONTENT = {
       tripTotalLabel: "Total for 1 trip (3–4 days)",
       tripTotalValue: "≈ €800–1,000",
       tripNote: "High risk: if the target player is injured or benched that weekend, the budget is lost.",
-      scouterTitle: "With Scouter Pro Club",
+      scouterTitle: "With Scouter Club Starter",
       scouterStat: "70–80%",
       scouterSub: "reduction in early-stage scouting expenses",
       scouterText:
-        "For less than the cost of a single trip, your entire scouting staff gets 12 months of unlimited remote access to verified Georgian prospects. Fly only when you are ready to sign.",
-      scouterBtn: "Request 30-Day Free Trial",
+        "For less than the cost of a single trip, your scouting staff gets 12 months of unlimited remote access to verified Georgian prospects. Fly only when you are ready to invite or sign.",
+      scouterBtn: "Start 14-Day Free Pilot",
     },
     pricingPage: {
       eyebrow: "Transparent Pricing",
@@ -301,58 +363,57 @@ const CONTENT = {
       popularBadge: "MOST POPULAR",
       b2bPlans: [
         {
-          tag: "01 · STARTER",
-          name: "Scout Starter",
-          priceEur: "€400",
-          priceGel: "1,200 ₾",
-          period: "/ year",
-          note: "30-day free trial",
-          forWho: "For independent scouts and regional academies starting remote scouting.",
+          tag: "01 · FREE PILOT",
+          name: "14-Day Pilot",
+          priceEur: "€0",
+          priceGel: "0 ₾",
+          period: "/ 14 days",
+          note: "No credit card required",
+          forWho: "For clubs and scouts testing our verified Georgian talent database before subscribing.",
           items: [
             "1 scout user seat",
-            "Core verified athlete database access",
-            "Standard filters (age, position, region)",
-            "Up to 5 direct athlete contacts / month",
-            "Highlight video access",
+            "Browse up to 20 verified athlete dossiers",
+            "Standard filters (age 14–25, position, region)",
+            "Sample 90-minute match & combine logs",
+            "Full U18 safeguarding compliance",
           ],
-          cta: "Start 30-Day Trial",
+          cta: "Start 14-Day Pilot",
           featured: false,
         },
         {
           tag: "02 · RECOMMENDED",
-          name: "Pro Club",
+          name: "Club Starter",
           priceEur: "€700",
           priceGel: "2,000 ₾",
           period: "/ year",
-          note: "30-day free trial · Best ROI",
+          note: "Best ROI · Less than 1 scouting trip",
           forWho: "For professional clubs and scouting departments seeking full remote evaluation.",
           items: [
-            "Everything in Scout Starter",
-            "Up to 3 user seats per club",
-            "Unlimited verified database access",
-            "Full 90-minute match video archives",
-            "Physical test metrics (30m sprint, agility, pass %)",
-            "Unlimited direct messaging with guardians & academies",
-            "Candidate comparison & shortlist workspace",
+            "Up to 3 scout seats per club",
+            "Unlimited verified athlete database access",
+            "Full 90-minute uncut match video archives",
+            "Combine physical test metrics (30m sprint, agility, pass %)",
+            "Unlimited compliant messaging with guardians & academies",
+            "Candidate triage & shortlist comparison workspace",
           ],
-          cta: "Start 30-Day Trial",
+          cta: "Request Club Starter",
           featured: true,
         },
         {
           tag: "03 · ENTERPRISE",
-          name: "Elite Academy",
-          priceEur: "€1,700",
-          priceGel: "5,000 ₾",
+          name: "Club Pro",
+          priceEur: "€1,600",
+          priceGel: "4,500 ₾",
           period: "/ year",
-          note: "30-day free trial · Dedicated support",
-          forWho: "For multi-team clubs and international academies requiring concierge scouting.",
+          note: "Multi-team & Concierge Scouting",
+          forWho: "For multi-team clubs and international academies requiring dedicated regional support.",
           items: [
-            "Everything in Pro Club",
+            "Everything in Club Starter",
             "Unlimited organization user seats",
-            "AI-powered talent match alerts",
-            "Concierge scouting: custom dossiers prepared by our team",
-            "Exclusive quarterly regional talent reports",
-            "Priority trial coordination in Tbilisi",
+            "AI-powered tactical talent alerts",
+            "Concierge scouting: custom dossiers prepared by our analysts",
+            "Quarterly regional talent intelligence reports",
+            "Priority trial logistics support in Tbilisi",
           ],
           cta: "Contact Enterprise Sales",
           featured: false,
@@ -361,56 +422,56 @@ const CONTENT = {
       b2cPlans: [
         {
           tag: "01 · LIFETIME FREE",
-          name: "Basic Profile",
+          name: "Free Basic",
           priceEur: "€0",
           priceGel: "0 ₾",
           period: "/ forever",
           note: "Free verification included",
-          forWho: "For every young athlete in Georgia ready to showcase their game internationally.",
+          forWho: "For every young athlete in Georgia (14–25) ready to showcase their game internationally.",
           items: [
-            "Complete digital athlete profile",
+            "Complete digital scouting profile",
             "Free federation & coach data verification",
-            "Upload highlights & full match links",
-            "Visible in international scout searches",
-            "Parent/guardian safety controls",
+            "Upload highlights & uncut match links",
+            "Visible in European club scout searches",
+            "Parent/guardian safeguarding controls",
           ],
           cta: "Create Free Profile",
           featured: false,
         },
         {
           tag: "02 · VISIBILITY BOOST",
-          name: "Pro Athlete",
+          name: "Verified Pro",
           priceEur: "€50",
           priceGel: "150 ₾",
           period: "/ year",
-          note: "Most chosen by academy players",
-          forWho: "For ambitious athletes who want priority ranking and scout engagement analytics.",
+          note: "Most chosen by ambitious prospects",
+          forWho: "For athletes seeking priority search visibility, combine integration, and scout analytics.",
           items: [
-            "Everything in Basic Profile",
+            "Everything in Free Basic",
             "Priority placement in scout search results",
-            "Custom EA FC-style verified player card for social sharing",
-            "Scout view analytics (see which clubs viewed your profile)",
-            "Extended physical & match performance charts",
+            "Official Scouter Combine test integration",
+            "Custom EA FC-style verified player card for sharing",
+            "Scout view analytics (see which clubs viewed your dossier)",
           ],
-          cta: "Upgrade to Pro",
+          cta: "Upgrade to Verified Pro",
           featured: true,
         },
         {
-          tag: "03 · FULL PORTFOLIO",
-          name: "Elite Athlete",
-          priceEur: "€85",
-          priceGel: "250 ₾",
+          tag: "03 · ACADEMY RATE",
+          name: "Academy Partner",
+          priceEur: "€35",
+          priceGel: "100 ₾",
           period: "/ year",
-          note: "Includes video editing support",
-          forWho: "For players preparing an international academy application package.",
+          note: "33% discount via partner academies",
+          forWho: "Special institutional rate for players registered through Scouter partner academies.",
           items: [
-            "Everything in Pro Athlete",
-            "Professional highlight reel editing by our media team",
-            "Official physical test benchmarking report",
-            "Featured spotlight in monthly scout newsletters",
-            "Priority support for trial documentation",
+            "All Verified Pro features included",
+            "Bulk academy coach & federation verification",
+            "Official regional combine participation priority",
+            "Shareable EA FC-style verified player card",
+            "Club view analytics & progress tracking",
           ],
-          cta: "Choose Elite",
+          cta: "Activate via Academy",
           featured: false,
         },
       ],
@@ -419,16 +480,16 @@ const CONTENT = {
       eyebrow: "About Scouter",
       title: "Leveling the playing field for Georgian talent",
       subtitle:
-        "We believe a young athlete's future should be determined by verified performance and hard work — never by geography or personal connections.",
+        "We are building a trusted B2B sports intelligence bridge — not a social network — so young athletes are judged on verified data rather than geography or connections.",
       trustTitle: "Trust, Verification & Child Safeguarding",
       trustCards: [
         [
           "Multi-Layer Verification",
-          "Every 'Verified' badge requires cross-checking with official federation registries or direct confirmation from licensed academy coaches.",
+          "Every 'Verified' badge requires cross-checking with official federation registries, regional combine logs, or licensed academy coaches.",
         ],
         [
           "Minor Safeguarding (U18)",
-          "Athletes under 18 cannot activate public messaging without verified parental/guardian consent. All club outreach is logged and moderated.",
+          "Athletes under 18 have zero public social feeds or unmoderated DMs. All club outreach requires verified parent/guardian and academy consent.",
         ],
         [
           "GDPR & Data Privacy",
@@ -447,12 +508,12 @@ const CONTENT = {
       eyebrow: "Help Center & FAQ",
       title: "Frequently Asked Questions",
       subtitle: "Everything athletes, parents, clubs, and scouts need to know about how Scouter works.",
-      searchPlaceholder: "Search questions (e.g., verification, pricing, minors, video)...",
+      searchPlaceholder: "Search questions (e.g., verification, pricing, safeguarding, video)...",
       categories: [
         ["all", "All Questions"],
         ["athletes", "Athletes & Parents"],
         ["clubs", "Clubs & Scouts"],
-        ["safety", "Safety & Verification"],
+        ["safety", "Safeguarding & Verification"],
       ],
       stillHaveQuestions: "Still have a specific question?",
       stillHaveText: "Our scouting operations team in Tbilisi is happy to help clubs, academies, and families.",
@@ -462,65 +523,59 @@ const CONTENT = {
           cat: "athletes",
           tag: "Athletes & Parents",
           q: "How much does the platform cost for athletes and parents?",
-          a: "Creating a basic profile and uploading data and videos is completely free, for life. Optionally, you can choose Pro Athlete (150 GEL per year) for priority placement in search results, extended analytics and profile-view statistics, or Elite Athlete (250 GEL per year), which adds detailed progress analysis and professional video editing support.",
+          a: "Creating a Free Basic profile, uploading match footage, and getting verified is completely free forever (0 GEL). Optionally, athletes can upgrade to Verified Pro (150 GEL/year) for priority scout search placement, official combine integration, and club view analytics — or access the exact same Pro package for 100 GEL/year through a Scouter Partner Academy.",
         },
         {
           cat: "clubs",
           tag: "Clubs & Scouts",
           q: "How much does access cost for clubs and scouts?",
-          a: "Clubs, academies and scouts pay an annual subscription (B2B): Scout Starter costs 1,200 GEL, Pro Club 2,000 GEL and Elite Academy 5,000 GEL per year. Every plan starts with a 30-day free trial.",
+          a: "Clubs and international scouts can start with a free 14-Day Pilot (0 GEL) to test our verified database. Annual B2B subscriptions are Club Starter at 2,000 GEL/year (up to 3 seats, unlimited verified database, 90-minute match archives) and Club Pro at 4,500 GEL/year (unlimited seats, AI alerts, and concierge scouting dossiers).",
         },
         {
           cat: "safety",
-          tag: "Safety & Verification",
+          tag: "Safeguarding & Verification",
+          q: "How is Scouter different from a sports social network?",
+          a: "Scouter is a B2B Talent Intelligence and Verification database, not a social media feed. There are no public comments, follower counts, or unmoderated DMs. Every profile is structured around verified federation match logs, standardized combine metrics, and uncut 90-minute game footage.",
+        },
+        {
+          cat: "safety",
+          tag: "Safeguarding & Verification",
+          q: "How is the safety of underage (U18) athletes protected?",
+          a: "Child safeguarding is built into our architecture. Athletes aged 14–17 require verified parental/guardian consent upon registration, and all communication from clubs or scouts is routed strictly through verified parents/guardians and licensed academy directors.",
+        },
+        {
+          cat: "safety",
+          tag: "Safeguarding & Verification",
           q: "How is the reliability of athletes' data checked?",
-          a: "Accuracy is ensured through integration with official federation databases and cooperation with local coaches. Profiles with verified data receive a special verified badge. Verification is free and does not depend on the plan.",
+          a: "Accuracy is ensured through cross-checking with official federation match logs, licensed academy coaches, and standardized Scouter Combine testing. Verification is 100% free and does not depend on a paid plan.",
         },
         {
           cat: "athletes",
           tag: "Athletes & Parents",
           q: "Can athletes who live in the regions use the platform?",
-          a: "Of course. One of Scouter's main goals is to discover talented athletes in the regions. The platform lets you show your abilities to foreign scouts without having to travel to the capital.",
-        },
-        {
-          cat: "safety",
-          tag: "Safety & Verification",
-          q: "How is the safety of underage athletes protected?",
-          a: "Registration and account management for athletes under 18 happen with the consent of a parent or legal guardian. Personal data and the rules for direct communication with strangers are strictly controlled on the platform.",
+          a: "Yes. Discovering overlooked regional talent across Georgia (Samegrelo, Imereti, Adjara, Kakheti, and beyond) is our core mission — allowing players to be evaluated by European clubs without relocating to Tbilisi or paying for $3,500 overseas trial camps.",
         },
         {
           cat: "athletes",
           tag: "Athletes & Parents",
           q: "What kind of videos and data should be uploaded to a profile?",
-          a: "For the most effective profile, we recommend uploading highlights, full matches and recordings of official physical tests. Scouts pay particular attention to uncut, full-length videos.",
-        },
-        {
-          cat: "athletes",
-          tag: "Athletes & Parents",
-          q: "Does the platform help athletes find sponsors?",
-          a: "Yes. Besides scouts, sports brands and private supporters are registered on Scouter. Athletes with strong academic or sporting results have a chance to receive individual sponsorship.",
+          a: "We recommend uploading uncut 90-minute match recordings alongside short highlights and physical test logs (such as 30m sprint times). International scouts rely primarily on full-match footage to assess tactical positioning and decision-making.",
         },
         {
           cat: "clubs",
           tag: "Clubs & Scouts",
           q: "Is the platform only for footballers, or for other sports too?",
-          a: "Scouter is a multi-sport platform built for both team and individual sports. The initial focus is football, but the system fully serves basketball players, rugby players and other athletes.",
-        },
-        {
-          cat: "clubs",
-          tag: "Clubs & Scouts",
-          q: "How does the platform make sure a scout actually notices my child or my profile?",
-          a: "Scouter uses smart filtering and recommendation algorithms that proactively suggest athletes with the positions and metrics scouts are looking for. Regularly updated data, full match videos and verified status also push a profile to the top of search results.",
+          a: "Scouter is built as a multi-sport scouting intelligence architecture. Our initial commercial rollout focuses on football (ages 14–25), with structured metric templates ready for basketball, rugby, and other Olympic sports.",
         },
       ],
     },
     contactModal: {
       title: "Get in touch with Scouter",
-      subtitle: "Request a 30-day club trial, partner your academy, or ask our team a question.",
+      subtitle: "Start your 14-day club pilot, onboard your academy, or ask our team a question.",
       nameLabel: "Full Name",
       roleLabel: "I am a...",
-      roles: ["Club / International Scout", "Academy / Coach", "Athlete / Parent", "Sponsor / Partner"],
-      orgLabel: "Club / Organization (Optional)",
+      roles: ["Club / International Scout", "Academy / Coach", "Athlete / Parent", "Institutional Partner"],
+      orgLabel: "Club / Academy (Optional)",
       emailLabel: "Work or Personal Email",
       msgLabel: "Message",
       submit: "Send Request",
@@ -529,7 +584,7 @@ const CONTENT = {
       close: "Close",
     },
     footer: {
-      tagline: "Verified sports intelligence connecting Georgian talent with global clubs.",
+      tagline: "Verified B2B talent intelligence connecting Georgian athletes (14–25) with global clubs.",
       rights: "All rights reserved.",
       privacy: "Privacy & GDPR",
       safeguarding: "Child Safeguarding",
@@ -550,67 +605,101 @@ const CONTENT = {
     ctaContact: "კონტაქტი",
     hero: {
       badge: "ნიჭი უნივერსალურია. შესაძლებლობა — არა.",
-      title: "ახალგაზრდა ტალანტები. გლობალური შესაძლებლობები",
+      title: "ვერიფიცირებული ტალანტების ბაზა. გლობალური წვდომა",
       subtitle:
-        "Scouter არის ციფრული სკაუტინგ-პლატფორმა, რომელიც ვერიფიცირებულ ქართველ სპორტსმენებს აკავშირებს საერთაშორისო კლუბებთან, აკადემიებთან და სკაუტებთან — გეოგრაფიული და ფინანსური ბარიერების გარეშე.",
+        "Scouter არის B2B სკაუტინგ-ინტელექტის პლატფორმა — და არა სოციალური ქსელი — რომელიც 14–25 წლის ვერიფიცირებულ ქართველ სპორტსმენებს აკავშირებს ევროპულ კლუბებთან სრული მატჩებისა და Combine ტესტების საფუძველზე.",
       btnDemo: "ნახე Live დემო",
-      btnTrial: "30-დღიანი უფასო Trial",
-      note: "სპორტსმენებისთვის უფასოა სამუდამოდ · 30-დღიანი უფასო საცდელი პერიოდი კლუბებისთვის",
+      btnTrial: "14-დღიანი უფასო Pilot",
+      note: "სპორტსმენებისთვის უფასოა სამუდამოდ · 14-დღიანი უფასო საცდელი პერიოდი კლუბებისთვის",
       traction: [
-        ["1,200+", "ვერიფიცირებული სპორტსმენი"],
+        ["1,200+", "ვერიფიცირებული სპორტსმენი (14–25 წ.)"],
         ["18", "პარტნიორი აკადემია საქართველოში"],
         ["45+", "აქტიური ევროპელი სკაუტი"],
-        ["100%", "ფედერაციისა და მწვრთნელების ვერიფიკაცია"],
+        ["100%", "U18 Safeguarding და მონაცემთა ვერიფიკაცია"],
       ],
       roleAthleteTitle: "ვარ სპორტსმენი ან მშობელი",
-      roleAthleteText: "შექმენი ვერიფიცირებული პროფილი, ატვირთე სრული მატჩები და მოხვდი სკაუტების რადარზე ძვირადღირებული კემპების გარეშე.",
+      roleAthleteText:
+        "შექმენი ვერიფიცირებული სკაუტინგ-დოსიე, ატვირთე სრული მატჩები და მოხვდი კლუბების რადარზე $3,500-იანი კემპების გარეშე.",
       roleAthleteCta: "უპირატესობების ნახვა",
       roleClubTitle: "ვარ სკაუტი ან კლუბი",
-      roleClubText: "გაფილტრე ქართველი ტალანტები მეტრიკებით და ნახე სრული მატჩები საქართველოში ჩამოფრენამდე.",
+      roleClubText:
+        "გაფილტრე ქართველი ტალანტები Combine მეტრიკებით და ნახე 90-წუთიანი მატჩები საქართველოში ჩამოფრენამდე.",
       roleClubCta: "კლუბის ინსტრუმენტები",
     },
     demo: {
       eyebrow: "ინტერაქტიული სკაუტინგ-პლატფორმა",
-      title: "აღმოაჩინე ვერიფიცირებული ქართველი ტალანტები წამებში",
-      subtitle: "დატესტე B2B მონაცემთა ბაზა: გაფილტრე პოზიციის, ასაკის, რეგიონის ან ვერიფიკაციის მიხედვით და გახსენი სრული დოსიე.",
+      title: "შეაფასე ვერიფიცირებული ქართველი ტალანტები წამებში",
+      subtitle:
+        "დატესტე B2B მონაცემთა ბაზა (14–25 წელი): გაფილტრე პოზიციის, ასაკის, რეგიონის ან ვერიფიკაციის მიხედვით და გახსენი სრული დოსიე.",
       filterPos: "პოზიცია",
-      filterAge: "ასაკი",
+      filterAge: "ასაკობრივი ჯგუფი (14–25)",
       filterRegion: "რეგიონი",
       verifiedOnly: "მხოლოდ ვერიფიცირებული ✓",
       showing: "ნაჩვენებია",
       athletesCount: "სპორტსმენი",
       openDossier: "სრული დოსიეს გახსნა",
-      verifiedBadge: "ვერიფიცირებულია",
+      verifiedBadge: "ფედერაცია & Combine ✓",
       pendingBadge: "მოწმდება",
+      safeguardingBadge: "U18 მშობლის დაცვა",
       modalMatches: "სრული მატჩები",
       modalSprint: "30მ სპრინტი",
       modalPass: "პასის სიზუსტე",
       modalInvite: "სინჯებზე მოწვევა / კონტაქტი",
-      modalWatch: "სრული მატჩის ჩანაწერის ნახვა",
+      modalWatch: "სრული 90' მატჩის ჩანაწერის ნახვა",
+      safeguardingNotice:
+        "არასრულწლოვანთა დაცვის პროტოკოლი (Safeguarding): სპორტსმენი 18 წლამდეა. კომუნიკაცია ხორციელდება მხოლოდ ვერიფიცირებული მშობლის/მეურვისა და აკადემიის გავლით.",
     },
     athletesPage: {
-      eyebrow: "სპორტსმენებისა და მშობლებისთვის",
-      title: "არა სოციალური ქსელი, არამედ პროფესიონალური სკაუტინგ-ინსტრუმენტი",
-      subtitle: "შენი კარიერა უნდა განისაზღვროს ვერიფიცირებული მონაცემებითა და სრული მატჩებით, და არა ნაცნობობით ან ოჯახის ბიუჯეტით.",
+      eyebrow: "სპორტსმენებისა და მშობლებისთვის (14–25 წელი)",
+      title: "არა სოციალური ქსელი, არამედ ვერიფიცირებული სკაუტინგ-ბაზა",
+      subtitle:
+        "შენი კარიერა ფასდება სტანდარტიზებული Combine მეტრიკებითა და 90-წუთიანი მატჩებით, და არა ნაცნობობით ან ოჯახის ბიუჯეტით.",
       cardShowcaseTitle: "შენი ვერიფიცირებული EA FC სტილის ბარათი",
       cardShowcaseText:
-        "ყოველი ვერიფიცირებული სპორტსმენი იღებს ციფრულ სკაუტინგ-პროფილს. Pro Athlete პაკეტით იხსნება შენი პერსონალური EA FC სტილის ბარათი სოციალური ქსელებისთვის, პრიორიტეტული ჩვენება ძიებაში და სკაუტების ნახვების ანალიტიკა.",
-      cardToggleBasic: "საბაზისო ბარათი",
-      cardTogglePro: "Pro ვერიფიცირებული ბარათი",
+        "ყოველი ვერიფიცირებული სპორტსმენი იღებს ციფრულ სკაუტინგ-დოსიეს. Verified Pro (150 ₾/წელი) ან პარტნიორი აკადემიის პაკეტით (100 ₾/წელი) იხსნება შენი EA FC სტილის ბარათი, პრიორიტეტული ჩვენება ძიებაში და კლუბების ნახვების ანალიტიკა.",
+      cardToggleBasic: "უფასო საბაზისო ბარათი",
+      cardTogglePro: "Verified Pro ბარათი",
       cardCreateCta: "შექმენი შენი ბარათი აპში",
       stepsTitle: "როგორ მუშაობს სპორტსმენებისთვის",
       steps: [
-        ["შექმენი პროფილი", "დაამატე ფიზიკური მონაცემები, სტატისტიკა, ჰაილაითები, სრული მატჩები და ფიზიკური ტესტების ვიდეოები."],
-        ["გაიარე უფასო ვერიფიკაცია", "მონაცემები მოწმდება ფედერაციის ბაზებსა და მწვრთნელებთან. ვერიფიკაციის ნიშანი უფასოა ყველა პაკეტზე."],
-        ["გახდი ხილვადი გლობალურად", "ჭკვიანი ალგორითმი შენს პროფილს პირდაპირ აჩვენებს ევროპელ სკაუტებს, რომლებიც შენს პოზიციას ეძებენ."],
+        [
+          "შექმენი სტრუქტურირებული პროფილი",
+          "დაამატე ფიზიკური მონაცემები, პოზიცია, ჰაილაითები და 90-წუთიანი მატჩების ჩანაწერები.",
+        ],
+        [
+          "გაიარე უფასო ვერიფიკაცია",
+          "მონაცემები მოწმდება ფედერაციის ოქმებთან, მწვრთნელებთან და Combine ტესტებთან. ვერიფიკაცია უფასოა ყველა პაკეტზე.",
+        ],
+        [
+          "მოხვდი ევროპული კლუბების რადარზე",
+          "ჭკვიანი ალგორითმი შენს დოსიეს პირდაპირ აჩვენებს სკაუტებს, რომლებიც შენს პოზიციას ეძებენ.",
+        ],
       ],
       features: [
-        ["ვერიფიცირებული მონაცემები", "ფედერაციასთან და მწვრთნელებთან გადამოწმებული სტატისტიკა — სრულიად უფასოდ."],
-        ["სრული მატჩების არქივი", "სკაუტები აფასებენ სრულ, დაუმონტაჟებელ თამაშებს და არა მხოლოდ 2-წუთიან კლიპებს."],
-        ["ნებისმიერი რეგიონიდან", "აჩვენე შენი შესაძლებლობები ზუგდიდიდან, ქუთაისიდან თუ ბათუმიდან თბილისში გადმოსვლის გარეშე."],
-        ["ნეპოტიზმის გარეშე", "ობიექტური მეტრიკები ყველა შრომისმოყვარე სპორტსმენს აძლევს თანაბარ საერთაშორისო შანსს."],
-        ["სპონსორების მოზიდვა", "სპორტული ბრენდები და მხარდამჭერები პლატფორმაზე ეძებენ წარმატებულ ახალგაზრდებს."],
-        ["არასრულწლოვანთა დაცვა", "18 წლამდე სპორტსმენების პროფილები იმართება მშობლის თანხმობით და მკაცრი კონტროლით."],
+        [
+          "ვერიფიცირებული მონაცემები",
+          "ფედერაციასთან, მწვრთნელებთან და Combine ტესტებთან გადამოწმებული სტატისტიკა — უფასოდ.",
+        ],
+        [
+          "სრული 90' მატჩების არქივი",
+          "კლუბები აფასებენ სრულ, დაუმონტაჟებელ თამაშებს და არა მხოლოდ 2-წუთიან კლიპებს.",
+        ],
+        [
+          "ნებისმიერი რეგიონიდან",
+          "აჩვენე შენი შესაძლებლობები ზუგდიდიდან, ქუთაისიდან თუ ბათუმიდან თბილისში გადმოსვლის გარეშე.",
+        ],
+        [
+          "ნეპოტიზმის გარეშე",
+          "ობიექტური მეტრიკები ყველა შრომისმოყვარე სპორტსმენს აძლევს თანაბარ საერთაშორისო შანსს.",
+        ],
+        [
+          "აკადემიის პარტნიორული ფასდაკლება",
+          "პარტნიორი აკადემიების მოთამაშეები იღებენ სრულ Verified Pro პაკეტს 100 ₾/წელი ტარიფით.",
+        ],
+        [
+          "U18 Safeguarding დაცვა",
+          "18 წლამდე პროფილებზე მოქმედებს მშობლის თანხმობა და უცხო პირებთან კონტაქტის მკაცრი ფილტრი.",
+        ],
       ],
       bannerTitle: "დაზოგე $3,500-იანი ევროპული საზაფხულო კემპის ხარჯი",
       bannerText:
@@ -618,22 +707,32 @@ const CONTENT = {
       bannerBtn: "შექმენი უფასო პროფილი",
     },
     clubsPage: {
-      eyebrow: "კლუბებისა და სკაუტებისთვის",
+      eyebrow: "კლუბებისა და საერთაშორისო სკაუტებისთვის",
       title: "აღმოაჩინე ახალი ბაზრები 75%-ით ნაკლები დანახარჯით",
-      subtitle: "ჩაანაცვლე ძვირადღირებული და სარისკო მივლინებები ვერიფიცირებული მონაცემებითა და სრული მატჩების არქივით.",
+      subtitle:
+        "ჩაანაცვლე სარისკო მივლინებები ვერიფიცირებული Combine მეტრიკებითა და 90-წუთიანი მატჩების არქივით.",
       stepsTitle: "როგორ მუშაობს კლუბებისთვის",
       steps: [
-        ["ზუსტი ფილტრაცია", "მოძებნე მოთამაშეები პოზიციის, ასაკის, სპრინტის დროისა და პასის სიზუსტის მიხედვით."],
-        ["დისტანციური შეფასება", "უყურე 90-წუთიან მატჩებს და ნახე მწვრთნელის მიერ დადასტურებული ტესტები ოფისიდან გაუსვლელად."],
-        ["პირდაპირი კონტაქტი", "დაუკავშირდი შერჩეულ მოთამაშეებს, მშობლებსა და აკადემიებს შუამავლების გარეშე."],
+        [
+          "ზუსტი ფილტრაცია და Triage",
+          "გაფილტრე 14–25 წლის მოთამაშეები პოზიციის, 30მ სპრინტის, პასის სიზუსტისა და ვერიფიკაციის მიხედვით.",
+        ],
+        [
+          "დისტანციური შეფასება",
+          "უყურე 90-წუთიან მატჩებს და ნახე Combine ტესტების შედეგები ოფისიდან გაუსვლელად.",
+        ],
+        [
+          "დაცული პირდაპირი კონტაქტი",
+          "დაუკავშირდი შერჩეული მოთამაშის მშობელს ან აკადემიას Safeguarding სტანდარტების სრული დაცვით.",
+        ],
       ],
       features: [
         ["სმარტ ფილტრები", "დეტალური ძიება ფიზიკური და ტექნიკური მაჩვენებლების მიხედვით."],
         ["AI რეკომენდაციები", "ალგორითმი ავტომატურად გირჩევს თქვენი კლუბის სტილზე მორგებულ ტალანტებს."],
-        ["სანდო ვერიფიკაცია", "ყოველი ვერიფიცირებული პროფილი დადასტურებულია ოფიციალური წყაროებით."],
-        ["სრული მატჩები", "სრული თამაშების ვიდეოარქივი საკვანძო ეპიზოდებთან ერთად."],
+        ["სანდო ვერიფიკაცია", "ყოველი ვერიფიცირებული პროფილი დადასტურებულია ფედერაციისა და Combine მონაცემებით."],
+        ["სრული 90' მატჩები", "სრული თამაშების ვიდეოარქივი საკვანძო ეპიზოდებთან ერთად."],
         ["შედარება და Shortlist", "შეადარე კანდიდატები ერთმანეთს სინჯებზე მოწვევამდე."],
-        ["პირდაპირი კომუნიკაცია", "უსაფრთხო და გამჭვირვალე კავშირი აკადემიებთან და მშობლებთან."],
+        ["Safeguarding კომუნიკაცია", "გამჭვირვალე და კონტროლირებადი კავშირი აკადემიებთან და მეურვეებთან."],
       ],
       tripTitle: "ერთი ტრადიციული სკაუტინგ-ვიზიტი საქართველოში",
       tripRows: [
@@ -644,12 +743,12 @@ const CONTENT = {
       tripTotalLabel: "ჯამური ხარჯი 1 ვიზიტზე (3–4 დღე)",
       tripTotalValue: "≈ €800–1,000",
       tripNote: "მაღალი რისკი: თუ მოთამაშემ ტრავმა მიიღო ან სათადარიგოზე დარჩა, ბიუჯეტი იკარგება.",
-      scouterTitle: "Scouter Pro Club-თან ერთად",
+      scouterTitle: "Scouter Club Starter-თან ერთად",
       scouterStat: "70–80%",
       scouterSub: "ეკონომია საწყისი სკაუტინგის ხარჯებზე",
       scouterText:
         "ერთი მივლინების ფასზე ნაკლებად, თქვენი გუნდი იღებს 1-წლიან ულიმიტო წვდომას ვერიფიცირებულ ბაზაზე. ჩამოფრინდით მხოლოდ უკვე შერჩეულ ტალანტებზე.",
-      scouterBtn: "მოითხოვე 30-დღიანი Trial",
+      scouterBtn: "დაიწყე 14-დღიანი Pilot",
     },
     pricingPage: {
       eyebrow: "გამჭვირვალე ფასები",
@@ -660,58 +759,57 @@ const CONTENT = {
       popularBadge: "MOST POPULAR",
       b2bPlans: [
         {
-          tag: "01 · STARTER",
-          name: "Scout Starter",
-          priceEur: "€400",
-          priceGel: "1,200 ₾",
-          period: "/ წელი",
-          note: "30-დღიანი უფასო Trial",
-          forWho: "ინდივიდუალური სკაუტებისა და მცირე აკადემიებისთვის.",
+          tag: "01 · უფასო პილოტი",
+          name: "14-Day Pilot",
+          priceEur: "€0",
+          priceGel: "0 ₾",
+          period: "/ 14 დღე",
+          note: "ბარათის მიბმის გარეშე",
+          forWho: "კლუბებისა და სკაუტებისთვის ვერიფიცირებული ბაზის შესაფასებლად.",
           items: [
             "1 სკაუტის პროფილი",
-            "წვდომა ვერიფიცირებულ საბაზისო ბაზაზე",
-            "სტანდარტული ფილტრები (ასაკი, პოზიცია, რეგიონი)",
-            "თვეში 5 სპორტსმენთან კონტაქტი",
-            "ჰაილაით ვიდეოების ნახვა",
+            "წვდომა 20 ვერიფიცირებულ დოსიეზე",
+            "სტანდარტული ფილტრები (ასაკი 14–25, პოზიცია, რეგიონი)",
+            "სადემონსტრაციო 90-წუთიანი მატჩები და Combine ლოგები",
+            "სრული U18 Safeguarding პროტოკოლი",
           ],
-          cta: "დაიწყე 30-დღიანი Trial",
+          cta: "დაიწყე 14-დღიანი Pilot",
           featured: false,
         },
         {
-          tag: "02 · RECOMMENDED",
-          name: "Pro Club",
+          tag: "02 · რეკომენდებული",
+          name: "Club Starter",
           priceEur: "€700",
           priceGel: "2,000 ₾",
           period: "/ წელი",
-          note: "30-დღიანი Trial · საუკეთესო არჩევანი",
+          note: "საუკეთესო ROI · 1 მივლინებაზე იაფი",
           forWho: "კლუბებისა და სკაუტინგ დეპარტამენტებისთვის სრული დისტანციური შეფასებისთვის.",
           items: [
-            "ყველაფერი Scout Starter პაკეტიდან",
-            "3 მომხმარებლის წვდომა ერთი კლუბიდან",
+            "3 მომხმარებლის წვდმა ერთი კლუბიდან",
             "ულიმიტო წვდომა ვერიფიცირებულ ბაზაზე",
             "სრული 90-წუთიანი მატჩების ვიდეოარქივი",
-            "ფიზიკური ტესტები (30მ სპრინტი, პასის სიზუსტე)",
-            "ულიმიტო პირდაპირი მესიჯები მშობლებთან და აკადემიებთან",
+            "Combine ფიზიკური ტესტები (30მ სპრინტი, პასის სიზუსტე)",
+            "ულიმიტო დაცული კომუნიკაცია მშობლებთან და აკადემიებთან",
             "კანდიდატების შედარებისა და Shortlist-ის სივრცე",
           ],
-          cta: "დაიწყე 30-დღიანი Trial",
+          cta: "მოითხოვე Club Starter",
           featured: true,
         },
         {
           tag: "03 · ENTERPRISE",
-          name: "Elite Academy",
-          priceEur: "€1,700",
-          priceGel: "5,000 ₾",
+          name: "Club Pro",
+          priceEur: "€1,600",
+          priceGel: "4,500 ₾",
           period: "/ წელი",
-          note: "30-დღიანი Trial · პერსონალური მენეჯერი",
-          forWho: "მსხვილი აკადემიებისა და კლუბებისთვის, რომლებსაც სჭირდებათ Concierge სერვისი.",
+          note: "მულტი-გუნდური & Concierge სერვისი",
+          forWho: "მსხვილი კლუბებისა და აკადემიებისთვის, რომლებსაც სჭირდებათ პერსონალური ანალიტიკა.",
           items: [
-            "ყველაფერი Pro Club პაკეტიდან",
+            "ყველაფერი Club Starter პაკეტიდან",
             "ულიმიტო მომხმარებლები ორგანიზაციიდან",
             "AI ტალანტების სარეკომენდაციო ალერტები",
-            "Concierge სერვისი: ჩვენი გუნდი ხელით გიმზადებთ ტალანტების დოსიეს",
-            "ექსკლუზიური კვარტალური რეგიონული რეპორტები",
-            "პრიორიტეტული მხარდაჭერა თბილისში სინჯების ორგანიზებისას",
+            "Concierge სკაუტინგი: ჩვენი ანალიტიკოსები გიმზადებენ დოსიეს",
+            "კვარტალური რეგიონული ტალანტების რეპორტები",
+            "პრიორიტეტული დახმარება თბილისში სინჯების ორგანიზებისას",
           ],
           cta: "დაუკავშირდი გაყიდვებს",
           featured: false,
@@ -719,18 +817,18 @@ const CONTENT = {
       ],
       b2cPlans: [
         {
-          tag: "01 · უფასო",
-          name: "Basic Profile",
+          tag: "01 · უფასო სამუდამოდ",
+          name: "Free Basic",
           priceEur: "€0",
           priceGel: "0 ₾",
           period: "/ სამუდამოდ",
           note: "უფასო ვერიფიკაცია შედის",
-          forWho: "ყველა ახალგაზრდა ქართველი სპორტსმენისთვის.",
+          forWho: "ყველა ახალგაზრდა ქართველი სპორტსმენისთვის (14–25 წელი).",
           items: [
             "სრული ციფრული სპორტული პროფილი",
             "ფედერაციისა და მწვრთნელის უფასო ვერიფიკაცია",
             "ჰაილაითებისა და სრული მატჩების ატვირთვა",
-            "ხილვადობა საერთაშორისო სკაუტების ძიებაში",
+            "ხილვადობა ევროპელი სკაუტების ძიებაში",
             "მშობლის/მეურვის უსაფრთხოების კონტროლი",
           ],
           cta: "შექმენი უფასო პროფილი",
@@ -738,38 +836,38 @@ const CONTENT = {
         },
         {
           tag: "02 · ხილვადობის ზრდა",
-          name: "Pro Athlete",
+          name: "Verified Pro",
           priceEur: "€50",
           priceGel: "150 ₾",
           period: "/ წელი",
           note: "ყველაზე პოპულარული სპორტსმენებში",
-          forWho: "ამბიციური მოთამაშეებისთვის, რომლებსაც სურთ პრიორიტეტული პოზიცია ძიებაში.",
+          forWho: "ამბიციური მოთამაშეებისთვის, რომლებსაც სურთ პრიორიტეტული პოზიცია და ანალიტიკა.",
           items: [
-            "ყველაფერი Basic Profile-დან",
+            "ყველაფერი Free Basic-დან",
             "პრიორიტეტული ჩვენება სკაუტების ძიების შედეგებში",
+            "ოფიციალური Scouter Combine ტესტების ინტეგრაცია",
             "პერსონალური EA FC სტილის ვერიფიცირებული ბარათი",
             "ანალიტიკა: ნახე, რომელმა ევროპულმა კლუბმა ნახა შენი პროფილი",
-            "ფიზიკური და სათამაშო პროგრესის გრაფიკები",
           ],
-          cta: "აირჩიე Pro",
+          cta: "აირჩიე Verified Pro",
           featured: true,
         },
         {
-          tag: "03 · სრული პორტფოლიო",
-          name: "Elite Athlete",
-          priceEur: "€85",
-          priceGel: "250 ₾",
+          tag: "03 · აკადემიის ტარიფი",
+          name: "Academy Partner",
+          priceEur: "€35",
+          priceGel: "100 ₾",
           period: "/ წელი",
-          note: "მოყვება ვიდეომონტაჟის სერვისი",
-          forWho: "სპორტსმენებისთვის, რომლებიც ემზადებიან საერთაშორისო აკადემიაში გასაგზავნად.",
+          note: "33%-იანი ფასდაკლება პარტნიორი აკადემიებისთვის",
+          forWho: "სპეციალური ინსტიტუციური ტარიფი პარტნიორი აკადემიების აღსაზრდელებისთვის.",
           items: [
-            "ყველაფერი Pro Athlete-დან",
-            "ჰაილაით ვიდეოს პროფესიონალური მონტაჟი ჩვენი გუნდისგან",
-            "ოფიციალური ფიზიკური ტესტირების რეპორტი",
-            "გამორჩეული პოზიცია სკაუტების ყოველთვიურ დაიჯესტში",
-            "პრიორიტეტული დახმარება სინჯების დოკუმენტაციაში",
+            "Verified Pro-ს ყველა ფუნქცია სრულად",
+            "აკადემიის მწვრთნელისა და ფედერაციის ერთიანი ვერიფიკაცია",
+            "პრიორიტეტული ჩართვა რეგიონულ Combine ტესტებში",
+            "გასაზიარებელი EA FC სტილის ვერიფიცირებული ბარათი",
+            "კლუბების ნახვების სრული ანალიტიკა",
           ],
-          cta: "აირჩიე Elite",
+          cta: "გააქტიურება აკადემიით",
           featured: false,
         },
       ],
@@ -778,16 +876,16 @@ const CONTENT = {
       eyebrow: "Scouter-ის შესახებ",
       title: "ვხსნით გზას მსოფლიო სპორტული არენისკენ",
       subtitle:
-        "ჩვენ გვჯერა, რომ ახალგაზრდა სპორტსმენის მომავალი უნდა განისაზღვროს ვერიფიცირებული შედეგებითა და შრომით — და არა გეოგრაფიით ან პირადი კავშირებით.",
+        "ჩვენ ვქმნით სანდო B2B სპორტულ ინტელექტის პლატფორმას — და არა სოციალურ ქსელს — რათა სპორტსმენის მომავალი განისაზღვროს ვერიფიცირებული მონაცემებით.",
       trustTitle: "სანდოობა, ვერიფიკაცია და არასრულწლოვანთა დაცვა",
       trustCards: [
         [
           "მრავალდონიანი ვერიფიკაცია",
-          "ყოველი 'Verified' ბეჯი მოწმდება ფედერაციის ოფიციალურ ბაზებსა და ლიცენზირებულ მწვრთნელებთან.",
+          "ყოველი 'Verified' ბეჯი მოწმდება ფედერაციის ოფიციალურ ბაზებთან, Combine ტესტებთან და ლიცენზირებულ მწვრთნელებთან.",
         ],
         [
           "არასრულწლოვანთა დაცვა (U18)",
-          "18 წლამდე სპორტსმენების კომუნიკაცია აქტიურდება მხოლოდ მშობლის/მეურვის თანხმობით და მკაცრი მოდერაციით.",
+          "18 წლამდე სპორტსმენებს არ აქვთ საჯარო ჩატი. კლუბთან ნებისმიერი კომუნიკაცია გადის მხოლოდ ვერიფიცირებულ მშობელსა და აკადემიაზე.",
         ],
         [
           "GDPR და მონაცემთა დაცვა",
@@ -806,12 +904,12 @@ const CONTENT = {
       eyebrow: "დახმარების ცენტრი",
       title: "ხშირად დასმული კითხვები",
       subtitle: "ყველა პასუხი სპორტსმენების, მშობლების, კლუბებისა და სკაუტებისთვის.",
-      searchPlaceholder: "მოძებნე კითხვა (მაგ: ვერიფიკაცია, ფასი, ვიდეო, უსაფრთხოება)...",
+      searchPlaceholder: "მოძებნე კითხვა (მაგ: ვერიფიკაცია, ფასი, ვიდეო, Safeguarding)...",
       categories: [
         ["all", "ყველა კითხვა"],
         ["athletes", "სპორტსმენები და მშობლები"],
         ["clubs", "კლუბები და სკაუტები"],
-        ["safety", "უსაფრთხოება და ვერიფიკაცია"],
+        ["safety", "Safeguarding და ვერიფიკაცია"],
       ],
       stillHaveQuestions: "ვერ იპოვე სასურველი პასუხი?",
       stillHaveText: "ჩვენი გუნდი თბილისიდან მზადაა დაეხმაროს კლუბებს, აკადემიებსა და ოჯახებს.",
@@ -821,65 +919,59 @@ const CONTENT = {
           cat: "athletes",
           tag: "სპორტსმენები და მშობლები",
           q: "რა ღირს პლატფორმის გამოყენება სპორტსმენებისა და მშობლებისთვის?",
-          a: "საბაზისო პროფილის შექმნა, მონაცემებისა და ვიდეოების ატვირთვა სრულიად უფასოა სამუდამოდ. სურვილისამებრ, შეგიძლიათ აირჩიოთ Pro Athlete (წელიწადში 150 ₾) ძიებაში პრიორიტეტული ჩვენებისა და პროფილის ნახვების სტატისტიკისთვის, ან Elite Athlete (წელიწადში 250 ₾), რომელსაც ემატება პროგრესის დეტალური ანალიზი და ვიდეოების პროფესიონალური მონტაჟის მხარდაჭერა.",
+          a: "Free Basic პროფილის შექმნა, მატჩების ატვირთვა და ვერიფიკაცია სრულიად უფასოა სამუდამოდ (0 ₾). სურვილისამებრ, შეგიძლიათ აირჩიოთ Verified Pro (წელიწადში 150 ₾) ძიებაში პრიორიტეტული ჩვენებისა და კლუბების ნახვების სტატისტიკისთვის, ხოლო პარტნიორი აკადემიების მოთამაშეებისთვის იგივე პაკეტი (Academy Partner) ღირს 100 ₾ წელიწადში.",
         },
         {
           cat: "clubs",
           tag: "კლუბები და სკაუტები",
           q: "რა ღირს წვდომა კლუბებისა და სკაუტებისთვის?",
-          a: "კლუბები, აკადემიები და სკაუტები იხდიან წლიურ სააბონენტო გადასახადს (B2B): Scout Starter — 1,200 ₾, Pro Club — 2,000 ₾ და Elite Academy — 5,000 ₾ წელიწადში. ყველა პაკეტი იწყება 30-დღიანი უფასო საცდელი პერიოდით (Free Trial).",
+          a: "კლუბებსა და სკაუტებს შეუძლიათ დაიწყონ უფასო 14-დღიანი პილოტით (14-Day Pilot — 0 ₾). წლიური B2B პაკეტებია: Club Starter — 2,000 ₾/წელი (3 მომხმარებელი, ულიმიტო ვერიფიცირებული ბაზა და 90-წუთიანი მატჩების არქივი) და Club Pro — 4,500 ₾/წელი (ულიმიტო ადგილები, AI ალერტები და Concierge სკაუტინგი).",
         },
         {
           cat: "safety",
-          tag: "უსაფრთხოება და ვერიფიკაცია",
+          tag: "Safeguarding და ვერიფიკაცია",
+          q: "რით განსხვავდება Scouter სპორტული სოციალური ქსელისგან?",
+          a: "Scouter არის B2B სკაუტინგ-ინტელექტის ბაზა და არა სოციალური ქსელი. აქ არ არის საჯარო კომენტარები, გამომწერები ან უკონტროლო მიმოწერა — ყველა პროფილი ეფუძნება ფედერაციის ოფიციალურ ოქმებს, Combine ტესტებსა და სრულ 90-წუთიან მატჩებს.",
+        },
+        {
+          cat: "safety",
+          tag: "Safeguarding და ვერიფიკაცია",
+          q: "როგორ არის დაცული არასრულწლოვანი (U18) სპორტსმენების უსაფრთხოება?",
+          a: "14–17 წლის სპორტსმენების რეგისტრაცია ხდება მხოლოდ მშობლის/კანონიერი მეურვის თანხმობით. სკაუტისა და კლუბის ნებისმიერი მოთხოვნა მიდის პირდაპირ მშობელთან და აკადემიის ხელმძღვანელთან.",
+        },
+        {
+          cat: "safety",
+          tag: "Safeguarding და ვერიფიკაცია",
           q: "როგორ მოწმდება სპორტსმენების მონაცემების სანდოობა?",
-          a: "მონაცემების სიზუსტე უზრუნველყოფილია ფედერაციის ოფიციალურ ბაზებთან ინტეგრაციითა და ადგილობრივ მწვრთნელებთან თანამშრომლობით. ვერიფიცირებული პროფილები იღებენ სპეციალურ ნიშანს (Verified Badge). ვერიფიკაცია უფასოა და არ არის დამოკიდებული პაკეტზე.",
+          a: "მონაცემები მოწმდება ფედერაციის ოფიციალურ ბაზებთან, ლიცენზირებულ მწვრთნელებთან და Scouter-ის რეგიონული Combine ტესტირების ოქმებთან. ვერიფიკაცია უფასოა ყველა პაკეტზე.",
         },
         {
           cat: "athletes",
           tag: "სპორტსმენები და მშობლები",
           q: "შეუძლიათ თუ არა პლატფორმით სარგებლობა რეგიონებში მცხოვრებ სპორტსმენებს?",
-          a: "რა თქმა უნდა. Scouter-ის ერთ-ერთი მთავარი მიზანი სწორედ რეგიონებში მცხოვრები ტალანტების აღმოჩენაა. პლატფორმა გაძლევთ საშუალებას, აჩვენოთ თქვენი შესაძლებლობები უცხოელ სკაუტებს დედაქალაქში ჩამოსვლის გარეშე.",
-        },
-        {
-          cat: "safety",
-          tag: "უსაფრთხოება და ვერიფიკაცია",
-          q: "როგორ არის დაცული არასრულწლოვანი სპორტსმენების უსაფრთხოება?",
-          a: "18 წლამდე სპორტსმენების რეგისტრაცია და ანგარიშის მართვა ხდება მშობლის ან კანონიერი მეურვის თანხმობით. პერსონალური მონაცემები და უცხო პირებთან პირდაპირი კომუნიკაციის წესები მკაცრად კონტროლდება პლატფორმაზე.",
+          a: "დიახ. რეგიონებში (სამეგრელო, იმერეთი, აჭარა, კახეთი და სხვ.) მცხოვრები ტალანტების აღმოჩენა ჩვენი მთავარი მისიაა — თბილისში გადმოსვლის ან $3,500-იანი უცხოური კემპების გარეშე.",
         },
         {
           cat: "athletes",
           tag: "სპორტსმენები და მშობლები",
           q: "რა ტიპის ვიდეოები და მონაცემები უნდა აიტვირთოს პროფილზე?",
-          a: "მაქსიმალურად ეფექტური პროფილისთვის გირჩევთ ატვირთოთ ჰაილაითები, სრული მატჩები და ოფიციალური ფიზიკური ტესტების ჩანაწერები. სკაუტები განსაკუთრებულ ყურადღებას აქცევენ სრულ, დაუმონტაჟებელ მატჩებს.",
-        },
-        {
-          cat: "athletes",
-          tag: "სპორტსმენები და მშობლები",
-          q: "ეხმარება თუ არა პლატფორმა სპორტსმენებს სპონსორების პოვნაში?",
-          a: "დიახ. სკაუტების გარდა, Scouter-ზე რეგისტრირებულნი არიან სპორტული ბრენდები და კერძო მხარდამჭერები. მაღალი აკადემიური ან სპორტული შედეგების მქონე სპორტსმენებს აქვთ შანსი, მიიღონ ინდივიდუალური სპონსორობა.",
+          a: "რეკომენდებულია 90-წუთიანი სრული მატჩების ატვირთვა ჰაილაითებთან და ფიზიკური ტესტების შედეგებთან ერთად, რადგან კლუბები გადაწყვეტილებას სრული თამაშის ანალიზით იღებენ.",
         },
         {
           cat: "clubs",
           tag: "კლუბები და სკაუტები",
           q: "პლატფორმა მხოლოდ ფეხბურთელებისთვისაა, თუ სხვა სპორტის სახეობებისთვისაც?",
-          a: "Scouter არის მულტისპორტული პლატფორმა, შექმნილი როგორც გუნდური, ისე ინდივიდუალური სპორტისთვის. საწყისი ფოკუსი ფეხბურთია, თუმცა სისტემა სრულად ემსახურება კალათბურთელებს, მორაგბეებსა და სხვა სპორტსმენებს.",
-        },
-        {
-          cat: "clubs",
-          tag: "კლუბები და სკაუტები",
-          q: "როგორ უზრუნველყოფს პლატფორმა, რომ სკაუტმა რეალურად შეამჩნიოს ჩემი შვილი ან ჩემი პროფილი?",
-          a: "Scouter იყენებს ჭკვიანი ფილტრაციისა და რეკომენდაციის ალგორითმებს, რომლებიც სკაუტებს პროაქტიულად სთავაზობენ მათთვის სასურველი პოზიციისა და მეტრიკების მქონე სპორტსმენებს. რეგულარულად განახლებული მონაცემები, სრული მატჩები და ვერიფიცირებული სტატუსი პროფილს ძიების შედეგების სათავეში აქცევს.",
+          a: "Scouter მულტისპორტული B2B არქიტექტურაა. საწყისი ეტაპი ფოკუსირებულია ფეხბურთზე (14–25 წელი), ხოლო სისტემა სრულად მზადაა კალათბურთის, რაგბისა და სხვა სახეობებისთვის.",
         },
       ],
     },
     contactModal: {
       title: "დაუკავშირდი Scouter-ს",
-      subtitle: "მოითხოვე კლუბის 30-დღიანი Trial, ჩართე აკადემია ან მოგვწერე ნებისმიერი კითხვა.",
+      subtitle: "დაიწყე კლუბის 14-დღიანი Pilot, ჩართე აკადემია ან მოგვწერე კითხვა.",
       nameLabel: "სახელი და გვარი",
       roleLabel: "ვინ ხართ...",
-      roles: ["კლუბი / საერთაშორისო სკაუტი", "აკადემია / მწვრთნელი", "სპორტსმენი / მშობელი", "სპონსორი / პარტნიორი"],
-      orgLabel: "კლუბი / ორგანიზაცია (არასავალდებულო)",
+      roles: ["კლუბი / საერთაშორისო სკაუტი", "აკადემია / მწვრთნელი", "სპორტსმენი / მშობელი", "ინსტიტუციური პარტნიორი"],
+      orgLabel: "კლუბი / აკადემია (არასავალდებულო)",
       emailLabel: "ელფოსტა",
       msgLabel: "შეტყობინება",
       submit: "გაგზავნა",
@@ -888,7 +980,7 @@ const CONTENT = {
       close: "დახურვა",
     },
     footer: {
-      tagline: "ვერიფიცირებული სპორტული მონაცემები ქართველი ტალანტების გლობალური აღმოჩენისთვის.",
+      tagline: "ვერიფიცირებული B2B სკაუტინგ-ინტელექტი 14–25 წლის ქართველი ტალანტების გლობალური აღმოჩენისთვის.",
       rights: "ყველა უფლება დაცულია.",
       privacy: "კონფიდენციალურობა & GDPR",
       safeguarding: "არასრულწლოვანთა დაცვა",
@@ -898,16 +990,58 @@ const CONTENT = {
 };
 
 /* ------------------------------------------------------------------ */
-/* UI COMPONENTS                                                      */
+/* REFINED BRAND LOGO (Split Blue/Emerald S + Italic Scouter.)        */
 /* ------------------------------------------------------------------ */
 function Logo({ onClick, dark }) {
+  const uid = useId().replace(/:/g, "");
+  const topGradId = `scouter-top-${uid}`;
+  const botGradId = `scouter-bot-${uid}`;
+
   return (
-    <button onClick={onClick} className="flex items-center space-x-2.5 text-left focus:outline-none">
-      <div className="w-9 h-9 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-xl flex items-center justify-center rotate-12 shadow-md shadow-emerald-500/20">
-        <Activity size={20} className="text-slate-950 -rotate-12" />
-      </div>
-      <span className={`text-xl sm:text-2xl font-extrabold tracking-tight ${dark ? "text-white" : "text-slate-900"}`}>
-        Scouter<span className="text-emerald-500">.</span>
+    <button
+      onClick={onClick}
+      className="flex items-center space-x-2.5 text-left focus:outline-none group"
+      aria-label="Scouter Home"
+    >
+      <svg
+        width="38"
+        height="34"
+        viewBox="0 0 110 96"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        className="flex-shrink-0 transition-transform duration-200 group-hover:scale-105"
+      >
+        <defs>
+          <linearGradient id={topGradId} x1="14" y1="46" x2="96" y2="10" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stopColor="#2563EB" />
+            <stop offset="100%" stopColor="#06B6D4" />
+          </linearGradient>
+          <linearGradient id={botGradId} x1="12" y1="86" x2="96" y2="44" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stopColor="#10B981" />
+            <stop offset="100%" stopColor="#34D399" />
+          </linearGradient>
+        </defs>
+
+        {/* Upper Blue-to-Cyan Aerodynamic Blade */}
+        <path
+          d="M44 10H98L83 25H47C43.5 25 40.5 26.8 38.8 29.8L30 45H12L25.5 21.5C29.3 14.8 36.3 10 44 10Z"
+          fill={`url(#${topGradId})`}
+        />
+
+        {/* Lower Emerald Upward-Pointing Arrow Blade */}
+        <path
+          d="M52 38H84L96 51L66 86H12L27 71H59C62.5 71 65.5 69.2 67.2 66.2L74 54H43L52 38Z"
+          fill={`url(#${botGradId})`}
+        />
+      </svg>
+
+      <span
+        className={`text-xl sm:text-2xl font-black italic tracking-tight leading-none select-none ${
+          dark ? "text-white" : "text-slate-950"
+        }`}
+      >
+        Scouter
+        <span className="inline-block w-2 h-2 bg-emerald-500 ml-0.5 align-baseline" />
       </span>
     </button>
   );
@@ -958,13 +1092,13 @@ function WebDashboardPreview({ onOpenDemo, dark }) {
                 : "bg-emerald-50 text-emerald-700 border-emerald-200"
             }`}
           >
-            LIVE DATABASE
+            VERIFIED DATABASE
           </span>
         </div>
 
         {/* Mini Filter Pills */}
         <div className="flex flex-wrap gap-2 my-4">
-          {["U17", "Striker / Left Back", "Verified Only ✓", "Full Match Video"].map((tag) => (
+          {["Ages 14–25", "Combine Verified ✓", "90' Uncut Match", "U18 Protected"].map((tag) => (
             <span
               key={tag}
               className={`px-2.5 py-1 rounded-lg text-xs font-semibold border ${
@@ -986,7 +1120,7 @@ function WebDashboardPreview({ onOpenDemo, dark }) {
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-blue-600 flex items-center justify-center font-black text-white text-base">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-600 to-emerald-500 flex items-center justify-center font-black text-white text-base">
                 GK
               </div>
               <div>
@@ -1019,8 +1153,8 @@ function WebDashboardPreview({ onOpenDemo, dark }) {
               <p className={`text-sm font-black mt-0.5 ${dark ? "text-white" : "text-slate-900"}`}>8 Uncut</p>
             </div>
             <div className={`rounded-xl p-2 ${dark ? "bg-slate-900/90" : "bg-white border border-slate-200/80"}`}>
-              <p className="text-[10px] text-slate-500 font-bold uppercase">Goals (U17)</p>
-              <p className={`text-sm font-black mt-0.5 ${dark ? "text-emerald-400" : "text-emerald-600"}`}>14 / 18</p>
+              <p className="text-[10px] text-slate-500 font-bold uppercase">Safeguarding</p>
+              <p className={`text-sm font-black mt-0.5 ${dark ? "text-emerald-400" : "text-emerald-600"}`}>Guardian ✓</p>
             </div>
           </div>
         </div>
@@ -1054,7 +1188,7 @@ function FifaCardShowcase({ tier, setTier, t, dark }) {
         {/* Left Explanation + Toggle */}
         <div className="lg:col-span-7 space-y-5">
           <div className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-amber-500/15 text-amber-500 border border-amber-500/30">
-            <Trophy size={14} className="mr-1.5" /> EA FC / FIFA-Style Scouting Card
+            <Trophy size={14} className="mr-1.5" /> EA FC / FIFA-Style Verified Card
           </div>
           <h3 className={`text-2xl sm:text-3xl font-black ${dark ? "text-white" : "text-slate-900"}`}>
             {t.athletesPage.cardShowcaseTitle}
@@ -1168,7 +1302,7 @@ function FifaCardShowcase({ tier, setTier, t, dark }) {
                   <BadgeCheck size={17} className={isPro ? "text-emerald-400" : "text-emerald-500"} />
                 </div>
                 <p className="text-[11px] opacity-75 font-semibold mt-0.5">
-                  {isPro ? "PRO VERIFIED · SCOUTER.GE" : "BASIC PROFILE · SCOUTER.GE"}
+                  {isPro ? "VERIFIED PRO · SCOUTER.GE" : "FREE BASIC · SCOUTER.GE"}
                 </p>
               </div>
 
@@ -1214,7 +1348,7 @@ export default function App() {
   const [activePage, setActivePage] = useState("home");
   const [lang, setLang] = useState("en");
   const [theme, setTheme] = useState("dark");
-  const [currency, setCurrency] = useState("EUR");
+  const [currency, setCurrency] = useState("GEL");
   const [pricingAudience, setPricingAudience] = useState("b2b");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -1243,6 +1377,35 @@ export default function App() {
     email: "",
     message: "",
   });
+
+  // Automatically set browser tab Favicon to the new Split Blue/Emerald 'S' icon
+  useEffect(() => {
+    const svgFavicon = encodeURIComponent(`
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 110 96">
+        <rect width="110" height="96" rx="22" fill="#060B19"/>
+        <defs>
+          <linearGradient id="t" x1="14" y1="46" x2="96" y2="10" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#2563EB"/>
+            <stop offset="100%" stop-color="#06B6D4"/>
+          </linearGradient>
+          <linearGradient id="b" x1="12" y1="86" x2="96" y2="44" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#10B981"/>
+            <stop offset="100%" stop-color="#34D399"/>
+          </linearGradient>
+        </defs>
+        <path d="M44 12H96L82 26H47C43.5 26 40.5 27.8 38.8 30.8L30 45H14L26.5 23C30.2 16.5 36.8 12 44 12Z" fill="url(#t)"/>
+        <path d="M52 38H83L94 50L65 84H14L28 70H58C61.5 70 64.5 68.2 66.2 65.2L73 53H44L52 38Z" fill="url(#b)"/>
+      </svg>
+    `);
+    let link = document.querySelector("link[rel~='icon']");
+    if (!link) {
+      link = document.createElement("link");
+      link.rel = "icon";
+      document.head.appendChild(link);
+    }
+    link.href = `data:image/svg+xml,${svgFavicon}`;
+    document.title = "Scouter. — Verified Talent Intelligence";
+  }, []);
 
   const dark = theme === "dark";
   const t = CONTENT[lang];
@@ -1515,7 +1678,7 @@ export default function App() {
                     {t.hero.btnDemo} <ArrowRight size={18} className="ml-2" />
                   </button>
                   <button
-                    onClick={() => openContactModal("30-Day Club Free Trial")}
+                    onClick={() => openContactModal("14-Day Club Free Pilot")}
                     className={`inline-flex items-center justify-center border font-bold px-7 py-4 rounded-full transition-all ${
                       dark
                         ? "bg-slate-900 hover:bg-slate-800 border-white/10 text-white"
@@ -1627,10 +1790,11 @@ export default function App() {
                     onChange={(e) => setAgeFilter(e.target.value)}
                     className={`w-full border rounded-xl px-3.5 py-2.5 text-sm font-semibold focus:outline-none focus:border-emerald-500 ${subSurface} ${headingText}`}
                   >
-                    <option value="All">All Ages (U15–U19)</option>
-                    <option value="U15">U15</option>
-                    <option value="U17">U17</option>
-                    <option value="U19">U19</option>
+                    <option value="All">All Ages (14–25)</option>
+                    <option value="U15">U15 (14–15)</option>
+                    <option value="U17">U17 (16–17)</option>
+                    <option value="U19">U19 (18–19)</option>
+                    <option value="U23 / Senior">U23 / Senior (20–25)</option>
                   </select>
                 </div>
 
@@ -1701,25 +1865,32 @@ export default function App() {
                   className={`cursor-pointer group border hover:border-emerald-500/60 rounded-3xl overflow-hidden transition-all flex flex-col ${cardSurface}`}
                 >
                   <div className={`bg-gradient-to-br ${athlete.gradient} p-5 relative`}>
-                    <div className="flex justify-between items-start">
+                    <div className="flex justify-between items-start gap-2">
                       <div className="bg-slate-950/75 backdrop-blur-md px-3 py-1 rounded-xl border border-white/10">
                         <span className="text-2xl font-black text-white leading-none">{athlete.rating}</span>
                         <span className="block text-[10px] font-bold text-emerald-400 uppercase mt-0.5">
                           {athlete.position}
                         </span>
                       </div>
-                      {athlete.verified ? (
-                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-950/80 text-emerald-400 border border-emerald-500/30">
-                          <BadgeCheck size={13} className="mr-1" /> {t.demo.verifiedBadge}
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-950/60 text-slate-200">
-                          {t.demo.pendingBadge}
-                        </span>
-                      )}
+                      <div className="flex flex-col items-end gap-1.5">
+                        {athlete.verified ? (
+                          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-950/80 text-emerald-400 border border-emerald-500/30">
+                            <BadgeCheck size={13} className="mr-1" /> {t.demo.verifiedBadge}
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-950/60 text-slate-200">
+                            {t.demo.pendingBadge}
+                          </span>
+                        )}
+                        {athlete.isMinor && (
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-950/70 text-amber-300 border border-amber-400/30">
+                            <Lock size={10} className="mr-1" /> {t.demo.safeguardingBadge}
+                          </span>
+                        )}
+                      </div>
                     </div>
 
-                    <div className="mt-6">
+                    <div className="mt-5">
                       <h3 className="text-xl font-black text-white">{athlete.name}</h3>
                       <p className="text-xs text-white/90 font-medium flex items-center mt-1">
                         <MapPin size={12} className="mr-1" /> {athlete.city}, {athlete.region} · {athlete.age} yrs (
@@ -1929,7 +2100,7 @@ export default function App() {
                 </div>
                 <div className="mt-6">
                   <button
-                    onClick={() => openContactModal("Pro Club 30-Day Trial")}
+                    onClick={() => openContactModal("14-Day Club Free Pilot")}
                     className="inline-flex items-center bg-blue-600 hover:bg-blue-500 text-white font-black px-7 py-3.5 rounded-full transition-all shadow-md"
                   >
                     {t.clubsPage.scouterBtn} <ArrowRight size={16} className="ml-2" />
@@ -1990,20 +2161,6 @@ export default function App() {
                 }`}
               >
                 <button
-                  onClick={() => setCurrency("EUR")}
-                  className={`px-3.5 py-2 rounded-full transition-colors ${
-                    currency === "EUR"
-                      ? dark
-                        ? "bg-slate-700 text-white"
-                        : "bg-white text-slate-900 shadow-sm"
-                      : dark
-                      ? "text-slate-400 hover:text-white"
-                      : "text-slate-600 hover:text-slate-900"
-                  }`}
-                >
-                  € EUR
-                </button>
-                <button
                   onClick={() => setCurrency("GEL")}
                   className={`px-3.5 py-2 rounded-full transition-colors ${
                     currency === "GEL"
@@ -2016,6 +2173,20 @@ export default function App() {
                   }`}
                 >
                   ₾ GEL
+                </button>
+                <button
+                  onClick={() => setCurrency("EUR")}
+                  className={`px-3.5 py-2 rounded-full transition-colors ${
+                    currency === "EUR"
+                      ? dark
+                        ? "bg-slate-700 text-white"
+                        : "bg-white text-slate-900 shadow-sm"
+                      : dark
+                      ? "text-slate-400 hover:text-white"
+                      : "text-slate-600 hover:text-slate-900"
+                  }`}
+                >
+                  € EUR
                 </button>
               </div>
             </div>
@@ -2138,7 +2309,7 @@ export default function App() {
               </div>
             </div>
 
-            {/* Leadership Team (No external LinkedIn links) */}
+            {/* Leadership Team */}
             <div>
               <h3 className={`text-2xl font-black text-center mb-8 ${headingText}`}>{t.aboutPage.teamTitle}</h3>
               <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
@@ -2235,7 +2406,9 @@ export default function App() {
                       className="w-full text-left p-6 flex items-start justify-between gap-4"
                     >
                       <div>
-                        <span className={`inline-block text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full mb-2.5 ${tagColor}`}>
+                        <span
+                          className={`inline-block text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full mb-2.5 ${tagColor}`}
+                        >
                           {item.tag}
                         </span>
                         <h3 className={`font-bold text-base leading-snug ${headingText}`}>{item.q}</h3>
@@ -2253,7 +2426,11 @@ export default function App() {
                       </span>
                     </button>
                     {isOpen && (
-                      <div className={`px-6 pb-6 pt-0 text-sm leading-relaxed border-t mt-1 pt-4 ${dark ? "border-white/5 text-slate-300" : "border-slate-100 text-slate-600"}`}>
+                      <div
+                        className={`px-6 pb-6 text-sm leading-relaxed border-t mt-1 pt-4 ${
+                          dark ? "border-white/5 text-slate-300" : "border-slate-100 text-slate-600"
+                        }`}
+                      >
                         {item.a}
                       </div>
                     )}
@@ -2330,7 +2507,7 @@ export default function App() {
           >
             <div className={`bg-gradient-to-r ${selectedAthlete.gradient} p-6 flex justify-between items-start`}>
               <div>
-                <div className="flex items-center space-x-2">
+                <div className="flex flex-wrap items-center gap-2">
                   <span className="px-2.5 py-0.5 rounded-full text-xs font-black bg-slate-950/75 text-white">
                     {selectedAthlete.position} · {selectedAthlete.ageGroup}
                   </span>
@@ -2355,6 +2532,20 @@ export default function App() {
             </div>
 
             <div className="p-6 space-y-5">
+              {/* Safeguarding Protocol Notice for Under-18 Athletes */}
+              {selectedAthlete.isMinor && (
+                <div
+                  className={`rounded-2xl p-3.5 border flex items-start gap-2.5 text-xs ${
+                    dark
+                      ? "bg-amber-500/10 border-amber-500/25 text-amber-200"
+                      : "bg-amber-50 border-amber-200 text-amber-900"
+                  }`}
+                >
+                  <ShieldCheck size={16} className="text-amber-500 flex-shrink-0 mt-0.5" />
+                  <span>{t.demo.safeguardingNotice}</span>
+                </div>
+              )}
+
               <div className="grid grid-cols-3 gap-3 text-center">
                 <div className={`border rounded-2xl p-3 ${subSurface}`}>
                   <p className="text-[11px] text-slate-500 font-bold uppercase">{t.demo.modalSprint}</p>
@@ -2394,7 +2585,7 @@ export default function App() {
                   onClick={() => {
                     const name = selectedAthlete.name;
                     setSelectedAthlete(null);
-                    openContactModal(`Trial / Scouting Inquiry for ${name}`);
+                    openContactModal(`Compliant Scouting Inquiry for ${name}`);
                   }}
                   className="flex-1 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black py-3.5 rounded-full text-sm transition-colors"
                 >
@@ -2407,7 +2598,7 @@ export default function App() {
       )}
 
       {/* ============================================================== */}
-      {/* MODAL 2: CONTACT US / REQUEST DEMO FORM                        */}
+      {/* MODAL 2: CONTACT US / REQUEST PILOT FORM                       */}
       {/* ============================================================== */}
       {contactOpen && (
         <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
